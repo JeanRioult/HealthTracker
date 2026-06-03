@@ -94,6 +94,7 @@ function bindControls() {
   });
 
   document.getElementById("saveButton").addEventListener("click", syncNow);
+  document.getElementById("tableSaveButton").addEventListener("click", syncNow);
   document.getElementById("refreshChartButton").addEventListener("click", updateChart);
   document.getElementById("importButton").addEventListener("click", () => els.fileInput.click());
   document.getElementById("exportButton").addEventListener("click", () => download("sante-data.json", JSON.stringify(currentDocument(), null, 2), "application/json"));
@@ -435,6 +436,7 @@ function startTimer() {
   }
 
   if (timerRemaining > 0) {
+    requestTimerNotificationPermission();
     timerRunning = true;
     timerLastTick = performance.now();
     renderTimerButton();
@@ -475,6 +477,7 @@ function updateTimer() {
       timerRunning = false;
       renderTimerButton();
       navigator.vibrate?.(140);
+      notifyTimerDone();
     }
   }
 
@@ -491,6 +494,38 @@ function renderTimerButton() {
   els.timerToggle.classList.toggle("running", timerRunning);
   els.timerToggle.setAttribute("aria-label", timerRunning ? "Pause" : "Démarrer");
   els.timerToggle.title = timerRunning ? "Pause" : "Démarrer";
+}
+
+function requestTimerNotificationPermission() {
+  if (!("Notification" in window)) return;
+  if (Notification.permission === "default") {
+    Notification.requestPermission().catch(() => {});
+  }
+}
+
+async function notifyTimerDone() {
+  if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+  const options = {
+    body: "Le timer est terminé.",
+    icon: "icon.svg",
+    badge: "icon.svg",
+    silent: false
+  };
+
+  try {
+    const registration = await navigator.serviceWorker?.ready;
+    if (registration?.showNotification) {
+      await registration.showNotification("Timer terminé", options);
+      return;
+    }
+  } catch {
+  }
+
+  try {
+    new Notification("Timer terminé", options);
+  } catch {
+  }
 }
 
 function pad(value) {

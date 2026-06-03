@@ -6,7 +6,6 @@ const THEME_KEY = "health.sante.theme.v2";
 const DEVICE_KEY = "health.sante.device.v1";
 const TOKEN_KEY = "health.sante.onedrive.tokens.v1";
 const LAST_SYNC_KEY = "health.sante.onedrive.lastSync.v1";
-const AUTHORITY = "https://login.microsoftonline.com/common/oauth2/v2.0";
 const GRAPH_ROOT = "https://graph.microsoft.com/v1.0";
 const GRAPH_SCOPES = "openid profile offline_access Files.ReadWrite.AppFolder";
 const SYNC_CONFIG = window.SANTE_SYNC_CONFIG || {};
@@ -695,8 +694,15 @@ function renderSyncButton() {
 
 async function completeOneDriveSignIn() {
   const params = new URLSearchParams(location.search);
+  const authError = params.get("error_description") || params.get("error");
   const code = params.get("code");
   const state = params.get("state");
+
+  if (authError) {
+    showStatus(decodeURIComponent(authError), true);
+    history.replaceState({}, document.title, getRedirectUri());
+    return;
+  }
 
   if (!code) return;
 
@@ -765,7 +771,7 @@ async function startOneDriveSignIn() {
   sessionStorage.setItem("sante.oauth.verifier", verifier);
   sessionStorage.setItem("sante.oauth.state", state);
 
-  const authUrl = new URL(`${AUTHORITY}/authorize`);
+  const authUrl = new URL(`${getAuthority()}/authorize`);
   authUrl.search = new URLSearchParams({
     client_id: SYNC_CONFIG.microsoftClientId,
     response_type: "code",
@@ -787,7 +793,7 @@ async function requestTokens(values) {
     ...values
   });
 
-  const response = await fetch(`${AUTHORITY}/token`, {
+  const response = await fetch(`${getAuthority()}/token`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body
@@ -800,6 +806,11 @@ async function requestTokens(values) {
   const tokens = await response.json();
   tokens.expiresAt = Date.now() + (tokens.expires_in || 3600) * 1000;
   return tokens;
+}
+
+function getAuthority() {
+  const tenant = SYNC_CONFIG.authTenant || "consumers";
+  return `https://login.microsoftonline.com/${tenant}/oauth2/v2.0`;
 }
 
 function readTokens() {

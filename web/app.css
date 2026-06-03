@@ -483,12 +483,14 @@ svg {
 
 .sync-state {
   position: fixed;
+  left: max(14px, env(safe-area-inset-left));
   right: max(14px, env(safe-area-inset-right));
   bottom: max(14px, env(safe-area-inset-bottom));
   z-index: 10;
-  max-width: min(360px, calc(100vw - 28px));
+  width: min(360px, calc(100vw - 28px));
+  max-width: calc(100vw - 28px);
   min-height: 0;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   border: 0;
   border-radius: 8px;
@@ -497,6 +499,8 @@ svg {
   box-shadow: none;
   font-size: 14px;
   font-weight: 620;
+  text-align: center;
+  overflow-wrap: anywhere;
   opacity: 0;
   pointer-events: none;
   transform: translateY(8px);

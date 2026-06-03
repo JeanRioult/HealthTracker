@@ -93,7 +93,7 @@ function bindControls() {
     updateChart();
   });
 
-  document.getElementById("saveButton").addEventListener("click", saveRowsNow);
+  document.getElementById("saveButton").addEventListener("click", syncNow);
   document.getElementById("refreshChartButton").addEventListener("click", updateChart);
   document.getElementById("importButton").addEventListener("click", () => els.fileInput.click());
   document.getElementById("exportButton").addEventListener("click", () => download("sante-data.json", JSON.stringify(currentDocument(), null, 2), "application/json"));

@@ -40,6 +40,8 @@ const els = {
   minutesInput: document.getElementById("minutesInput"),
   secondsInput: document.getElementById("secondsInput"),
   fileInput: document.getElementById("fileInput"),
+  actionMenu: document.getElementById("actionMenu"),
+  moreToggle: document.getElementById("moreToggle"),
   syncButton: document.getElementById("syncButton"),
   syncState: document.getElementById("syncState"),
   themeToggle: document.getElementById("themeToggle"),
@@ -78,6 +80,9 @@ function bindControls() {
   });
 
   els.themeToggle.addEventListener("click", toggleTheme);
+  els.moreToggle.addEventListener("click", toggleActionMenu);
+  els.actionMenu.addEventListener("click", closeActionMenuAfterAction);
+  document.addEventListener("click", closeActionMenuFromOutside);
 
   document.getElementById("tableToggle").addEventListener("click", () => {
     toggleDrawer(els.tableDrawer, document.getElementById("tableToggle"), "Afficher le tableau", "Masquer le tableau");
@@ -114,6 +119,32 @@ function toggleDrawer(drawer, button, showLabel, hideLabel) {
   const isOpen = drawer.classList.toggle("open");
   button.setAttribute("aria-label", isOpen ? hideLabel : showLabel);
   button.classList.toggle("active", isOpen);
+}
+
+function toggleActionMenu(event) {
+  event.stopPropagation();
+  const isOpen = els.actionMenu.classList.toggle("open");
+  els.moreToggle.classList.toggle("active", isOpen);
+  els.moreToggle.setAttribute("aria-expanded", String(isOpen));
+}
+
+function closeActionMenuFromOutside(event) {
+  if (!els.actionMenu.classList.contains("open")) return;
+  if (event.target.closest(".menu-wrap")) return;
+
+  closeActionMenu();
+}
+
+function closeActionMenuAfterAction(event) {
+  if (event.target.closest("button")) {
+    window.setTimeout(closeActionMenu, 0);
+  }
+}
+
+function closeActionMenu() {
+  els.actionMenu.classList.remove("open");
+  els.moreToggle.classList.remove("active");
+  els.moreToggle.setAttribute("aria-expanded", "false");
 }
 
 function applyStoredTheme() {
@@ -242,6 +273,15 @@ function normaliseRows(input) {
 
 function renderTable() {
   els.table.textContent = "";
+  const colgroup = document.createElement("colgroup");
+
+  for (let index = 0; index < COLUMNS; index += 1) {
+    const col = document.createElement("col");
+    col.dataset.col = index;
+    colgroup.appendChild(col);
+  }
+
+  els.table.appendChild(colgroup);
 
   rows.forEach((row, rowIndex) => {
     const tr = document.createElement("tr");
@@ -261,6 +301,8 @@ function renderTable() {
 
     els.table.appendChild(tr);
   });
+
+  updateTableColumnWidths();
 }
 
 function handleCellInput(event) {
@@ -269,7 +311,26 @@ function handleCellInput(event) {
   rows[row][col] = event.target.value;
   setSaveState("Modifié");
   scheduleSave();
+  updateTableColumnWidths();
   updateChart();
+}
+
+function updateTableColumnWidths() {
+  const sizes = Array(COLUMNS).fill(4);
+
+  rows.forEach((row) => {
+    row.forEach((value, index) => {
+      const length = Array.from(String(value || "")).length;
+      sizes[index] = Math.max(sizes[index], Math.min(length + 1, 12));
+    });
+  });
+
+  const weights = sizes.map((size) => Math.max(4, Math.min(size, 12)));
+  const total = weights.reduce((sum, value) => sum + value, 0);
+
+  els.table.querySelectorAll("col").forEach((col, index) => {
+    col.style.width = `${(weights[index] / total) * 100}%`;
+  });
 }
 
 function scheduleSave() {

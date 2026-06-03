@@ -176,8 +176,38 @@ h2 {
 .top-actions,
 .command-row {
   gap: 8px;
-  flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.top-actions {
+  flex-wrap: nowrap;
+}
+
+.command-row {
+  flex-wrap: wrap;
+}
+
+.menu-wrap {
+  position: relative;
+}
+
+.action-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 5;
+  display: none;
+  grid-template-columns: repeat(2, 48px);
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-strong);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.18);
+}
+
+.action-menu.open {
+  display: grid;
 }
 
 .icon-button {
@@ -339,7 +369,8 @@ h2 {
 
 table {
   width: 100%;
-  min-width: 680px;
+  min-width: 0;
+  table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
 }
@@ -368,13 +399,14 @@ tr:last-child td {
 td input {
   width: 100%;
   min-width: 0;
-  height: 42px;
+  height: 40px;
   border: 0;
-  padding: 0 10px;
+  padding: 0 clamp(4px, 1.6vw, 10px);
   color: var(--text);
   background: transparent;
-  font-size: 15px;
+  font-size: clamp(12px, 3.2vw, 15px);
   font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
 }
 
 td input:focus {

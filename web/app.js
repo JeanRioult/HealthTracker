@@ -169,7 +169,7 @@ function renderThemeButton() {
 
 function makeDefaultRows() {
   const seed = [
-    ["Date", "SYS", "DIA", "BPM", "Poids(kg)", "Sommeil(h)"],
+    ["Date", "SYS", "DIA", "BPM", "Poids (kg)", "Sommeil (h)"],
     ["02/06/26", "121", "78", "75", "75", "8"],
     ["03/06/26", "130", "85", "83", "75", "10"]
   ];
@@ -193,10 +193,10 @@ function loadDocument() {
       const migrated = makeDocument(JSON.parse(legacyRows));
       saveDocument(migrated, false);
       localStorage.removeItem(LEGACY_ROWS_KEY);
-      showStatus("Donnees migrees en JSON");
+      showStatus("Données migrées en JSON");
       return migrated;
     } catch {
-      showStatus("Anciennes donnees illisibles");
+      showStatus("Anciennes données illisibles");
     }
   }
 
@@ -503,7 +503,7 @@ function updateChart() {
   svg.textContent = "";
 
   if (!data.series.length) {
-    addText(svg, 380, 180, "Aucune donnee valide", "empty-chart", "middle");
+    addText(svg, 380, 180, "Aucune donnée valide", "empty-chart", "middle");
     return;
   }
 
@@ -697,7 +697,7 @@ async function syncNow() {
     if (!remoteDoc) {
       await uploadOneDriveDocument(token, localDoc);
       rememberSync(localDoc);
-      showStatus("Envoye vers OneDrive");
+      showStatus("Envoyé vers OneDrive");
       return;
     }
 
@@ -708,38 +708,38 @@ async function syncNow() {
 
     if (localChanged && remoteChanged && localDoc.updatedAt !== remote.updatedAt) {
       const useRemote = remote.updatedAt > localDoc.updatedAt
-        ? window.confirm("OneDrive est plus recent. OK importe OneDrive, Annuler garde cet appareil.")
-        : !window.confirm("Cet appareil est plus recent. OK garde cet appareil, Annuler importe OneDrive.");
+        ? window.confirm("OneDrive est plus récent. OK importe OneDrive, Annuler garde cet appareil.")
+        : !window.confirm("Cet appareil est plus récent. OK garde cet appareil, Annuler importe OneDrive.");
 
       if (useRemote) {
         applyRemoteDocument(remote);
         rememberSync(remote);
-        showStatus("OneDrive importe");
+        showStatus("OneDrive importé");
         return;
       }
 
       await uploadOneDriveDocument(token, localDoc);
       rememberSync(localDoc);
-      showStatus("OneDrive mis a jour");
+      showStatus("OneDrive mis à jour");
       return;
     }
 
     if (remote.updatedAt > localDoc.updatedAt) {
       applyRemoteDocument(remote);
       rememberSync(remote);
-      showStatus("OneDrive importe");
+      showStatus("OneDrive importé");
       return;
     }
 
     if (localDoc.updatedAt > remote.updatedAt) {
       await uploadOneDriveDocument(token, localDoc);
       rememberSync(localDoc);
-      showStatus("OneDrive mis a jour");
+      showStatus("OneDrive mis à jour");
       return;
     }
 
     rememberSync(localDoc);
-    showStatus("Deja synchronise");
+    showStatus("Déjà synchronisé");
   } catch (error) {
     showStatus(error.message || "Synchronisation impossible", true);
   }
@@ -771,7 +771,7 @@ async function completeOneDriveSignIn() {
   const verifier = sessionStorage.getItem("sante.oauth.verifier");
 
   if (!expectedState || !verifier || state !== expectedState) {
-    showStatus("Connexion OneDrive refusee", true);
+    showStatus("Connexion OneDrive refusée", true);
     return;
   }
 
@@ -786,7 +786,7 @@ async function completeOneDriveSignIn() {
     sessionStorage.removeItem("sante.oauth.state");
     sessionStorage.removeItem("sante.oauth.verifier");
     history.replaceState({}, document.title, getRedirectUri());
-    showStatus("Connecte a OneDrive");
+    showStatus("Connecté à OneDrive");
     window.setTimeout(syncNow, 250);
   } catch {
     showStatus("Connexion OneDrive impossible", true);
@@ -822,7 +822,7 @@ async function getAccessToken() {
 
 async function startOneDriveSignIn() {
   if (!crypto.subtle) {
-    showStatus("Connexion securisee requise");
+    showStatus("Connexion sécurisée requise");
     return;
   }
 
@@ -897,7 +897,7 @@ async function downloadOneDriveDocument(token) {
   });
 
   if (response.status === 404) return null;
-  if (response.status === 401) throw new Error("Connexion OneDrive expiree");
+  if (response.status === 401) throw new Error("Connexion OneDrive expirée");
   if (!response.ok) throw new Error("Lecture OneDrive impossible");
 
   return response.json();

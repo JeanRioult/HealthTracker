@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f5f7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Sante">
+  <title>Sante</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="top-actions" aria-label="Actions">
+        <button class="icon-button" type="button" id="themeToggle" aria-label="Activer le mode nuit" title="Mode nuit">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.4 14.5A7.8 7.8 0 0 1 9.5 3.6 8.6 8.6 0 1 0 20.4 14.5Z"/></svg>
+        </button>
+        <button class="icon-button" type="button" id="syncButton" aria-label="Synchroniser avec OneDrive" title="OneDrive">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7.5 18h10a4.5 4.5 0 0 0 .5-9 6 6 0 0 0-11.2-1.8A5.4 5.4 0 0 0 7.5 18Z"/></svg>
+        </button>
+        <button class="icon-button" type="button" id="tableToggle" aria-label="Afficher le tableau" title="Tableau">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5h16v14H4V5Zm0 5h16M9 5v14M15 5v14"/></svg>
+        </button>
+        <button class="icon-button" type="button" id="chartToggle" aria-label="Afficher les courbes" title="Courbes">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 17c3.2 0 3.2-8 6.4-8 3.3 0 3.3 10 6.6 10 1.5 0 2.2-2.2 3-4"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero-panel" aria-label="Horloge et chronomètres">
+        <nav class="segmented" aria-label="Mode">
+          <button type="button" class="segment active" data-mode="clock">Horloge</button>
+          <button type="button" class="segment" data-mode="stopwatch">Chronomètre</button>
+          <button type="button" class="segment" data-mode="timer">Timer</button>
+        </nav>
+
+        <section class="mode-panel active" id="clockPanel" aria-label="Horloge">
+          <output class="time-display" id="clockTime">00:00:00</output>
+          <p class="subtle" id="clockDate"></p>
+        </section>
+
+        <section class="mode-panel" id="stopwatchPanel" aria-label="Chronomètre">
+          <output class="time-display" id="stopwatchTime">00:00:00.0</output>
+          <div class="control-row">
+            <button class="icon-button run-control" type="button" id="stopwatchToggle" aria-label="Démarrer" title="Démarrer">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 5v14l11-7-11-7Z"/></svg>
+            </button>
+            <button class="icon-button" type="button" id="stopwatchReset" aria-label="Réinitialiser" title="Réinitialiser">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 2.3 5.7M4 18v-6h6"/></svg>
+            </button>
+          </div>
+        </section>
+
+        <section class="mode-panel" id="timerPanel" aria-label="Timer">
+          <output class="time-display" id="timerTime">00:00</output>
+          <div class="timer-inputs">
+            <label>
+              <span>min</span>
+              <input type="number" inputmode="numeric" id="minutesInput" min="0" max="999" value="10">
+            </label>
+            <label>
+              <span>sec</span>
+              <input type="number" inputmode="numeric" id="secondsInput" min="0" max="59" value="00">
+            </label>
+          </div>
+          <div class="control-row">
+            <button class="icon-button run-control" type="button" id="timerToggle" aria-label="Démarrer" title="Démarrer">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 5v14l11-7-11-7Z"/></svg>
+            </button>
+            <button class="icon-button" type="button" id="timerReset" aria-label="Réinitialiser" title="Réinitialiser">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 2.3 5.7M4 18v-6h6"/></svg>
+            </button>
+          </div>
+        </section>
+      </section>
+
+      <section class="drawer" id="tableDrawer" aria-label="Tableau">
+        <div class="section-header">
+          <div class="command-row">
+            <button class="icon-button" type="button" id="saveButton" aria-label="Sauvegarder" title="Sauvegarder">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 4h12l2 2v14H5V4Zm3 0v6h8V4M8 20v-6h8v6"/></svg>
+            </button>
+            <button class="icon-button" type="button" id="importButton" aria-label="Importer" title="Importer">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
+            </button>
+            <button class="icon-button" type="button" id="exportButton" aria-label="Exporter" title="Exporter">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 20V8m0 0 5 5m-5-5-5 5M5 4h14"/></svg>
+            </button>
+          </div>
+        </div>
+        <p class="save-state visually-hidden" id="saveState">Pret</p>
+        <div class="table-scroll">
+          <table id="healthTable" aria-label="Données de santé"></table>
+        </div>
+        <input class="visually-hidden" type="file" id="fileInput" accept=".csv,.json,text/csv,application/json">
+      </section>
+
+      <section class="drawer" id="chartDrawer" aria-label="Courbes">
+        <div class="section-header">
+          <button class="icon-button" type="button" id="refreshChartButton" aria-label="Actualiser" title="Actualiser">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.7M20 6v6h-6M20 12a8 8 0 0 1-13.7 5.7M4 18v-6h6"/></svg>
+          </button>
+        </div>
+        <div class="chart-wrap">
+          <svg id="chartSvg" role="img" aria-label="Courbes de santé" viewBox="0 0 760 360"></svg>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <p class="sync-state" id="syncState" aria-live="polite"></p>
+  <script src="sync-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
